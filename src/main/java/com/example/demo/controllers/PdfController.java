@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -32,6 +33,7 @@ public class PdfController {
 
         // Original pdf got back after conversion of the multipart file
         File pdfFile = this.pdfService.convertPdfToFile(postedPdf);
+        int counter = 0;
 
         // Stripping the file to read data in it
         try (PDDocument document = PDDocument.load(pdfFile)) {
@@ -47,11 +49,20 @@ public class PdfController {
 
                 String pdfFileInText = tStripper.getText(document);
 
+                counter = this.pdfService.getOccurrencesOfArticleWriterInPDF("Sambaly KOTE", counter, pdfFileInText);
+
+                System.out.println(counter);
+
                 // split by whitespace
-                String lines[] = pdfFileInText.split("\\r\\n\\r\\n");
+                // String lines[] = pdfFileInText.split("\\r\\n\\r\\n");
+                // System.out.println(pdfFileInText);
+                /*counter = (int) List.of(pdfFileInText).parallelStream()
+                        .filter(word -> word.equalsIgnoreCase("sambaly kote"))
+                        .count();
+                System.out.println(counter);
                 for (String line : lines) {
                     System.out.println(line);
-                }
+                }*/
 
             }
 
