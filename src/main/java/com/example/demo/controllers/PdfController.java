@@ -45,45 +45,7 @@ public class PdfController {
 
         List<ArticleWriter> articleWriters = this.articleWriterRepository.findAll();
 
-        int[] counters = new int[articleWriters.toArray().length];
-
-        // Stripping the file to read data in it
-        try (PDDocument document = PDDocument.load(pdfFile)) {
-
-            document.getClass();
-
-            if (!document.isEncrypted()) {
-
-                PDFTextStripperByArea stripper = new PDFTextStripperByArea();
-                stripper.setSortByPosition(true);
-
-                PDFTextStripper tStripper = new PDFTextStripper();
-
-                String pdfFileInText = tStripper.getText(document);
-
-                List<SearchResult> results = this.pdfService.getOccurrencesOfArticleWriterInPDF(articleWriters, counters, pdfFileInText);
-                this.searchResultRepository.saveAll(results);
-
-                System.out.println(results);
-                // System.out.println(counters);
-                // System.out.println(articleWriters);
-
-                // split by whitespace
-                // String lines[] = pdfFileInText.split("\\r\\n\\r\\n");
-                // System.out.println(pdfFileInText);
-                /*counter = (int) List.of(pdfFileInText).parallelStream()
-                        .filter(word -> word.equalsIgnoreCase("sambaly kote"))
-                        .count();
-                System.out.println(counter);
-                for (String line : lines) {
-                    System.out.println(line);
-                }*/
-
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.pdfService.GetResultsFromPdfFile(pdfFile, articleWriters);
     }
 
 }
