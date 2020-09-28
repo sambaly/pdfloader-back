@@ -1,5 +1,9 @@
 package com.example.demo.controllers;
 
+import com.example.demo.domain.ArticleWriter;
+import com.example.demo.domain.SearchResult;
+import com.example.demo.repositories.ArticleWriterRepository;
+import com.example.demo.repositories.SearchResultRepository;
 import com.example.demo.services.PdfService;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -21,6 +25,12 @@ public class PdfController {
     @Autowired
     private PdfService pdfService;
 
+    @Autowired
+    private ArticleWriterRepository articleWriterRepository;
+
+    @Autowired
+    private SearchResultRepository searchResultRepository;
+
     /**
      * This method permits us to get the pdf
      * file from the front end part and do
@@ -30,10 +40,12 @@ public class PdfController {
      */
     @PostMapping(value = "/pdf-loaded")
     public void getPostedPdf(@RequestParam("postedPdf") MultipartFile postedPdf) throws IOException {
-
         // Original pdf got back after conversion of the multipart file
         File pdfFile = this.pdfService.convertPdfToFile(postedPdf);
-        int counter = 0;
+
+        List<ArticleWriter> articleWriters = this.articleWriterRepository.findAll();
+
+        int[] counters = new int[articleWriters.toArray().length];
 
         // Stripping the file to read data in it
         try (PDDocument document = PDDocument.load(pdfFile)) {
@@ -49,9 +61,12 @@ public class PdfController {
 
                 String pdfFileInText = tStripper.getText(document);
 
-                counter = this.pdfService.getOccurrencesOfArticleWriterInPDF("Sambaly KOTE", counter, pdfFileInText);
+                List<SearchResult> results = this.pdfService.getOccurrencesOfArticleWriterInPDF(articleWriters, counters, pdfFileInText);
+                this.searchResultRepository.saveAll(results);
 
-                System.out.println(counter);
+                System.out.println(results);
+                // System.out.println(counters);
+                // System.out.println(articleWriters);
 
                 // split by whitespace
                 // String lines[] = pdfFileInText.split("\\r\\n\\r\\n");
