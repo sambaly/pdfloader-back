@@ -13,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +51,9 @@ public class PdfService {
      */
     public List<SearchResult> getOccurrencesOfArticleWriterInPDF(List<ArticleWriter> articleWriters, int[] counters, String pdfFileInText) {
         List<SearchResult> searchResults = new ArrayList<>();
+        LocalDate date = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+        String dateFormatee = date.format(formatter);
 
         for (int i = 0; i < articleWriters.size(); i++) {
             int lastIndex = 0;
@@ -61,7 +66,7 @@ public class PdfService {
                     lastIndex += articleWriters.get(i).getName().length();
                 }
             }
-            searchResults.add(new SearchResult(null, articleWriters.get(i).getName(), counters[i]));
+            searchResults.add(new SearchResult(null, articleWriters.get(i).getName(), counters[i], dateFormatee));
         }
         /*int lastIndex = 0;
 

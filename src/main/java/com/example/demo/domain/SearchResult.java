@@ -21,4 +21,5 @@ public class SearchResult {
     private Long id;
     private String writerName;
     private int writerOccurrencesCount;
+    private String dateEnregistrement;
 }
